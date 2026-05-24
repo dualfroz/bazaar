@@ -1,0 +1,36 @@
+{
+    "name": "workspace/bazaar",
+    "description": "Bazaar - e-commerce shop on a hand-rolled PHP microframework",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.3",
+        "ext-pdo": "*",
+        "stripe/stripe-php": "^16.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bazaar\\": "src/"
+        },
+        "files": [
+            "src/Support/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bazaar\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "scripts": {
+        "migrate": "php bin/migrate.php",
+        "seed": "php bin/seed.php",
+        "test": "phpunit"
+    }
+}

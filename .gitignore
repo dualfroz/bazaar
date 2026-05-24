@@ -1,0 +1,7 @@
+/vendor/
+/.env
+/database/*.sqlite
+/database/*.sqlite-journal
+.DS_Store
+.phpunit.result.cache
+/.phpunit.cache/
