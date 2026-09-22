@@ -10,15 +10,6 @@ final class Role
 
     public const staffRoles = [self::manager, self::admin];
 
-    public static function label(string $role): string
-    {
-        return match ($role) {
-            self::admin => 'Administrator',
-            self::manager => 'Manager',
-            default => 'Customer',
-        };
-    }
-
     public static function isStaff(string $role): bool
     {
         return in_array($role, self::staffRoles, true);

@@ -33,18 +33,4 @@ final class CouponResult
     {
         return $this->status === self::valid;
     }
-
-    public function message(): string
-    {
-        return match ($this->status) {
-            self::valid => 'Coupon applied.',
-            self::notFound => 'That coupon code was not recognised.',
-            self::inactive => 'That coupon is no longer active.',
-            self::notStarted => 'That coupon is not valid yet.',
-            self::expired => 'That coupon has expired.',
-            self::exhausted => 'That coupon has reached its redemption limit.',
-            self::belowMinimum => 'Your cart does not meet the minimum for this coupon.',
-            default => 'That coupon could not be applied.',
-        };
-    }
 }
