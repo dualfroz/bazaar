@@ -49,6 +49,11 @@ final class Response
         return $this->content;
     }
 
+    public function header(string $name): ?string
+    {
+        return $this->headers[$name] ?? null;
+    }
+
     public function send(): void
     {
         http_response_code($this->status);

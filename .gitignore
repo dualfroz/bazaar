@@ -2,6 +2,7 @@
 /.env
 /database/*.sqlite
 /database/*.sqlite-journal
+/storage/
 .DS_Store
 .phpunit.result.cache
 /.phpunit.cache/

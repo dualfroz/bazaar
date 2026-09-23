@@ -31,35 +31,6 @@ final class ProductRepository
         );
     }
 
-    public function search(?string $categorySlug, ?string $term, string $sort = 'newest'): array
-    {
-        $sql = 'SELECT p.*, c.name AS categoryName, c.slug AS categorySlug
-                FROM products p
-                LEFT JOIN categories c ON c.id = p.categoryId
-                WHERE p.isActive = 1';
-        $bindings = [];
-
-        if ($categorySlug !== null && $categorySlug !== '') {
-            $sql .= ' AND c.slug = ?';
-            $bindings[] = $categorySlug;
-        }
-        if ($term !== null && trim($term) !== '') {
-            $sql .= ' AND (p.name LIKE ? OR p.description LIKE ?)';
-            $like = '%' . trim($term) . '%';
-            $bindings[] = $like;
-            $bindings[] = $like;
-        }
-
-        $sql .= match ($sort) {
-            'priceAsc' => ' ORDER BY p.priceCents ASC',
-            'priceDesc' => ' ORDER BY p.priceCents DESC',
-            'name' => ' ORDER BY p.name ASC',
-            default => ' ORDER BY p.createdAt DESC, p.id DESC',
-        };
-
-        return $this->db->select($sql, $bindings);
-    }
-
     public function featured(int $limit = 6): array
     {
         return $this->db->select(
@@ -146,6 +117,14 @@ final class ProductRepository
     {
         $this->db->statement(
             'UPDATE products SET stockQuantity = stockQuantity - ? WHERE id = ?',
+            [$quantity, $id]
+        );
+    }
+
+    public function incrementStock(int $id, int $quantity): void
+    {
+        $this->db->statement(
+            'UPDATE products SET stockQuantity = stockQuantity + ? WHERE id = ?',
             [$quantity, $id]
         );
     }

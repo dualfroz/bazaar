@@ -20,15 +20,15 @@ final class AuthController extends Controller
 
         $errors = [];
         if ($name === '') {
-            $errors['name'] = 'Please enter your name.';
+            $errors['name'] = $this->t('auth.errors.nameRequired');
         }
         if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $errors['email'] = 'Please enter a valid email address.';
+            $errors['email'] = $this->t('auth.errors.emailInvalid');
         } elseif ($this->ctx->users->emailExists($email)) {
-            $errors['email'] = 'An account with this email already exists.';
+            $errors['email'] = $this->t('auth.errors.emailTaken');
         }
         if (strlen($password) < 8) {
-            $errors['password'] = 'Password must be at least 8 characters.';
+            $errors['password'] = $this->t('auth.errors.passwordShort');
         }
 
         if ($errors !== []) {
@@ -40,7 +40,7 @@ final class AuthController extends Controller
 
         $userId = $this->ctx->auth->register($email, $password, $name);
         $this->ctx->auth->login($this->ctx->users->findById($userId));
-        $this->ctx->session->flash('success', 'Welcome to Bazaar, ' . $name . '.');
+        $this->ctx->session->flash('success', $this->t('auth.welcome', ['name' => $name]));
         return $this->redirect('/');
     }
 
@@ -58,20 +58,20 @@ final class AuthController extends Controller
         $user = $this->ctx->auth->attempt($email, $password);
         if ($user === null) {
             return $this->view('auth.login', [
-                'errors' => ['email' => 'Those credentials do not match our records.'],
+                'errors' => ['email' => $this->t('auth.errors.credentials')],
                 'old' => ['email' => $email],
             ], 'layout', 422);
         }
 
         $this->ctx->auth->login($user);
-        $this->ctx->session->flash('success', 'Signed in successfully.');
+        $this->ctx->session->flash('success', $this->t('auth.signedIn'));
         return $this->redirect($user['isAdmin'] ? '/admin' : '/');
     }
 
     public function logout(): Response
     {
         $this->ctx->auth->logout();
-        $this->ctx->session->flash('success', 'You have been signed out.');
+        $this->ctx->session->flash('success', $this->t('auth.signedOut'));
         return $this->redirect('/');
     }
 }

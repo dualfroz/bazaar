@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($title ?? 'Bazaar - a small good shop') ?></title>
+    <title><?= e($title ?? $appName . ' - ' . $t('layout.tagline')) ?></title>
     <link rel="stylesheet" href="/assets/app.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23b4531f'/><text x='16' y='23' font-size='19' text-anchor='middle' fill='white' font-family='serif'>B</text></svg>">
 </head>
@@ -22,7 +22,7 @@
         </nav>
         <span class="nav__spacer"></span>
         <nav class="nav">
-            <span class="lang-switch">
+            <span class="lang-switch" aria-label="<?= e($t('layout.language')) ?>">
                 <?php foreach ($supportedLocales as $code): ?>
                     <a class="lang-switch__item <?= $locale === $code ? 'lang-switch__item--active' : '' ?>" href="/locale/<?= e($code) ?>"><?= e(strtoupper($code)) ?></a>
                 <?php endforeach; ?>
@@ -63,8 +63,8 @@
 
 <footer class="site-footer">
     <div class="wrap site-footer__bar">
-        <span>&copy; <?= date('Y') ?> <?= e($appName) ?>. Built on a hand-rolled PHP microframework.</span>
-        <span>Payments secured by Stripe (test mode)</span>
+        <span>&copy; <?= date('Y') ?> <?= e($appName) ?>. <?= e($t('layout.builtWith')) ?></span>
+        <span><?= e($t('layout.payments')) ?></span>
     </div>
 </footer>
 </body>

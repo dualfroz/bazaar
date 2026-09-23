@@ -6,7 +6,7 @@
             <div class="empty">
                 <svg class="icon empty__icon" viewBox="0 0 24 24"><path d="M3 4h2l2.4 12.3a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 8H6"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg>
                 <h3><?= e($t('cart.empty')) ?></h3>
-                <p class="muted">Browse the catalog and add something you like.</p>
+                <p class="muted"><?= e($t('cart.emptyHint')) ?></p>
                 <a class="btn btn--primary mt" href="/products"><?= e($t('nav.shop')) ?></a>
             </div>
         <?php else: ?>
@@ -15,10 +15,10 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th colspan="2">Product</th>
-                                <th class="num">Price</th>
-                                <th>Quantity</th>
-                                <th class="num">Total</th>
+                                <th colspan="2"><?= e($t('cart.product')) ?></th>
+                                <th class="num"><?= e($t('cart.price')) ?></th>
+                                <th><?= e($t('cart.quantity')) ?></th>
+                                <th class="num"><?= e($t('cart.lineTotal')) ?></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -47,7 +47,7 @@
                                             <div class="qty">
                                                 <input type="number" name="quantity" value="<?= (int) $line['quantity'] ?>" min="1" max="<?= (int) $line['availableStock'] ?>">
                                             </div>
-                                            <button class="btn btn--sm" type="submit">Update</button>
+                                            <button class="btn btn--sm" type="submit"><?= e($t('cart.update')) ?></button>
                                         </form>
                                     </td>
                                     <td class="num mono" style="font-weight:600"><?= e(formatMoney((int) $line['lineTotalCents'], $currency)) ?></td>
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="panel sticky panel--pad">
-                    <h3>Order summary</h3>
+                    <h3><?= e($t('cart.summary')) ?></h3>
 
                     <form method="post" action="/cart/coupon" class="coupon-form">
                         <input type="hidden" name="csrfToken" value="<?= e($csrfToken) ?>">
@@ -76,7 +76,7 @@
                     <?php if ($couponCode !== ''): ?>
                         <form method="post" action="/cart/coupon/remove" class="mt-sm">
                             <input type="hidden" name="csrfToken" value="<?= e($csrfToken) ?>">
-                            <button class="btn btn--ghost btn--sm" type="submit">Remove coupon <?= e($couponCode) ?></button>
+                            <button class="btn btn--ghost btn--sm" type="submit"><?= e($t('cart.removeCoupon', ['code' => $couponCode])) ?></button>
                         </form>
                     <?php endif; ?>
 
@@ -84,10 +84,10 @@
                     <?php if ($discountCents > 0): ?>
                         <div class="summary-row summary-row--discount"><span><?= e($t('cart.discount')) ?> (<?= e($couponCode) ?>)</span><span class="mono">-<?= e(formatMoney($discountCents, $currency)) ?></span></div>
                     <?php endif; ?>
-                    <div class="summary-row"><span>Shipping</span><span>Calculated at checkout</span></div>
+                    <div class="summary-row"><span><?= e($t('cart.shipping')) ?></span><span><?= e($t('cart.shippingAtCheckout')) ?></span></div>
                     <div class="summary-row summary-row--total"><span><?= e($t('cart.total')) ?></span><span class="mono"><?= e(formatMoney($totalCents, $currency)) ?></span></div>
                     <a class="btn btn--primary btn--block mt-lg" href="/checkout"><?= e($t('cart.checkout')) ?></a>
-                    <a class="btn btn--ghost btn--block mt" href="/products">Continue shopping</a>
+                    <a class="btn btn--ghost btn--block mt" href="/products"><?= e($t('cart.continueShopping')) ?></a>
                 </div>
             </div>
         <?php endif; ?>

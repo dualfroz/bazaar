@@ -17,7 +17,7 @@ final class CartController extends Controller
         $quantity = max(1, $this->ctx->request->integer('quantity', 1));
         $variantId = $this->ctx->request->integer('variantId', 0) ?: null;
         $this->ctx->cart->add($productId, $quantity, $variantId);
-        $this->ctx->session->flash('success', 'Item added to your cart.');
+        $this->ctx->session->flash('success', $this->t('cart.added'));
         return $this->redirect('/cart');
     }
 
@@ -35,7 +35,7 @@ final class CartController extends Controller
         $productId = $this->ctx->request->integer('productId');
         $variantId = $this->ctx->request->integer('variantId', 0) ?: null;
         $this->ctx->cart->remove($productId, $variantId);
-        $this->ctx->session->flash('success', 'Item removed from your cart.');
+        $this->ctx->session->flash('success', $this->t('cart.removed'));
         return $this->redirect('/cart');
     }
 
@@ -46,12 +46,12 @@ final class CartController extends Controller
 
         if ($result->isValid()) {
             $this->ctx->session->put('couponCode', $result->coupon['code']);
-            $this->ctx->session->flash('success', $this->ctx->translator->get('cart.couponApplied', [
+            $this->ctx->session->flash('success', $this->t('cart.couponApplied', [
                 'code' => $result->coupon['code'],
             ]));
         } else {
             $this->ctx->session->forget('couponCode');
-            $this->ctx->session->flash('error', $result->message());
+            $this->ctx->session->flash('error', $this->t('coupon.' . $result->status));
         }
         return $this->redirect('/cart');
     }
@@ -59,7 +59,7 @@ final class CartController extends Controller
     public function removeCoupon(): Response
     {
         $this->ctx->session->forget('couponCode');
-        $this->ctx->session->flash('success', 'Coupon removed.');
+        $this->ctx->session->flash('success', $this->t('cart.couponRemoved'));
         return $this->redirect('/cart');
     }
 

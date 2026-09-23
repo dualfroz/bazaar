@@ -33,15 +33,15 @@ $isSaved = in_array((int) $product['id'], array_map('intval', $wishlisted), true
 
         <div class="product-card__foot">
             <span class="price">
-                <?php if ($variantCount > 0 && $priceFromCents !== (int) $product['priceCents']): ?><span class="price__from">from</span> <?php endif; ?>
+                <?php if ($variantCount > 0 && $priceFromCents !== (int) $product['priceCents']): ?><span class="price__from"><?= e($t('catalog.from')) ?></span> <?php endif; ?>
                 <?= e(formatMoney($priceFromCents, $currency)) ?>
             </span>
             <?php if ($stock <= 0): ?>
-                <span class="badge badge--out">Sold out</span>
+                <span class="badge badge--out"><?= e($t('product.soldOut')) ?></span>
             <?php elseif ($stock <= 5): ?>
-                <span class="badge badge--low">Only <?= $stock ?> left</span>
+                <span class="badge badge--low"><?= e($t('product.fewLeft', ['count' => $stock])) ?></span>
             <?php else: ?>
-                <span class="badge badge--stock">In stock</span>
+                <span class="badge badge--stock"><?= e($t('product.available')) ?></span>
             <?php endif; ?>
         </div>
 
@@ -50,7 +50,7 @@ $isSaved = in_array((int) $product['id'], array_map('intval', $wishlisted), true
                 <input type="hidden" name="csrfToken" value="<?= e($csrfToken) ?>">
                 <input type="hidden" name="productId" value="<?= (int) $product['id'] ?>">
                 <button type="submit" class="btn btn--ghost btn--sm<?= $isSaved ? ' is-saved' : '' ?>">
-                    <?= $isSaved ? 'Saved' : 'Save' ?>
+                    <?= e($isSaved ? $t('product.savedToWishlist') : $t('product.saveToWishlist')) ?>
                 </button>
             </form>
         <?php endif; ?>

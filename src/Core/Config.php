@@ -47,6 +47,13 @@ final class Config
             'STRIPE_PUBLISHABLE_KEY' => 'pk_test_placeholder',
             'STRIPE_WEBHOOK_SECRET' => 'whsec_placeholder',
             'CURRENCY' => 'usd',
+            'MAIL_DRIVER' => 'log',
+            'MAIL_HOST' => '',
+            'MAIL_PORT' => '587',
+            'MAIL_USERNAME' => '',
+            'MAIL_PASSWORD' => '',
+            'MAIL_ENCRYPTION' => 'tls',
+            'MAIL_FROM' => 'orders@bazaar.test',
         ];
     }
 

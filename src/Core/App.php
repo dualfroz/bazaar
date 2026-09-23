@@ -2,7 +2,8 @@
 
 namespace Bazaar\Core;
 
-use Bazaar\Mail\LogMailer;
+use Bazaar\Mail\Mailer;
+use Bazaar\Mail\MailerFactory;
 use Bazaar\Repositories\AttributeRepository;
 use Bazaar\Repositories\CategoryRepository;
 use Bazaar\Repositories\CouponRepository;
@@ -20,6 +21,7 @@ use Bazaar\Services\CouponService;
 use Bazaar\Services\OrderService;
 use Bazaar\Services\ProductSearch;
 use Bazaar\Services\ReviewService;
+use Bazaar\Services\StripeGateway;
 use Bazaar\Support\Translator;
 
 final class App
@@ -34,7 +36,11 @@ final class App
         $session = new Session();
         $session->start();
 
-        $database = Database::instance();
+        $this->initialize(Database::instance(), Request::capture(), $session, MailerFactory::fromConfig());
+    }
+
+    public function initialize(Database $database, Request $request, Session $session, Mailer $mailer): void
+    {
         $users = new UserRepository($database);
         $categories = new CategoryRepository($database);
         $products = new ProductRepository($database);
@@ -47,8 +53,8 @@ final class App
 
         $auth = new Auth($session, $users);
         $cart = new Cart($session, $products, $variants);
-        $mailer = new LogMailer(basePath('storage/logs/mail.log'));
-        $orderService = new OrderService($database, $orders, $products, $variants, $coupons, $mailer);
+        $payments = Config::stripeConfigured() ? StripeGateway::fromConfig() : null;
+        $orderService = new OrderService($database, $orders, $products, $variants, $coupons, $mailer, $payments);
         $couponService = new CouponService($coupons);
         $reviewService = new ReviewService($database, $reviews);
         $productSearch = new ProductSearch($database, $attributes, $variants, $reviews, $categories);
@@ -56,7 +62,6 @@ final class App
         $csrf = new Csrf($session);
         $view = new View(basePath('views'));
 
-        $request = Request::capture();
         $translator = new Translator(basePath('resources/lang'), $this->resolveLocale($request, $session));
 
         $this->context = new Context(
@@ -117,10 +122,10 @@ final class App
 
     public function run(): void
     {
-        $this->dispatch()->send();
+        $this->handle()->send();
     }
 
-    private function dispatch(): Response
+    public function handle(): Response
     {
         $request = $this->context->request;
         $match = $this->router->match($request);
@@ -154,7 +159,7 @@ final class App
         }
 
         if (in_array('auth', $middleware, true) && !$auth->check()) {
-            $this->context->session->flash('error', 'Please sign in to continue.');
+            $this->context->session->flash('error', $this->context->translator->get('auth.signInRequired'));
             return Response::redirect('/login');
         }
 

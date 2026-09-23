@@ -77,7 +77,7 @@ $reviewCount = (int) $reviewSummary['count'];
                                         <input type="radio" name="variantId" value="<?= (int) $variant['id'] ?>" <?= $index === 0 ? 'checked' : '' ?> <?= $vStock <= 0 ? 'disabled' : '' ?>>
                                         <span class="variant-opt__label"><?= e($variant['label'] !== '' ? $variant['label'] : $variant['sku']) ?></span>
                                         <span class="variant-opt__price"><?= e(formatMoney((int) $variant['priceCents'], $currency)) ?></span>
-                                        <span class="variant-opt__stock muted small"><?= $vStock > 0 ? $vStock . ' left' : e($t('product.soldOut')) ?></span>
+                                        <span class="variant-opt__stock muted small"><?= e($vStock > 0 ? $t('product.variantLeft', ['count' => $vStock]) : $t('product.soldOut')) ?></span>
                                     </label>
                                 <?php endforeach; ?>
                             </fieldset>
@@ -118,7 +118,7 @@ $reviewCount = (int) $reviewSummary['count'];
                     <input type="hidden" name="productId" value="<?= (int) $product['id'] ?>">
                     <div class="row" style="gap:12px;align-items:flex-end">
                         <label class="stack">
-                            <span class="small muted">Rating</span>
+                            <span class="small muted"><?= e($t('product.rating')) ?></span>
                             <select class="select" name="rating">
                                 <?php for ($star = 5; $star >= 1; $star--): ?>
                                     <option value="<?= $star ?>"><?= $star ?></option>
@@ -126,11 +126,11 @@ $reviewCount = (int) $reviewSummary['count'];
                             </select>
                         </label>
                         <label class="stack" style="flex:1">
-                            <span class="small muted">Title</span>
+                            <span class="small muted"><?= e($t('product.reviewTitle')) ?></span>
                             <input class="input" type="text" name="title" maxlength="120">
                         </label>
                     </div>
-                    <textarea class="input mt" name="body" rows="3" placeholder="Share your experience..."></textarea>
+                    <textarea class="input mt" name="body" rows="3" placeholder="<?= e($t('product.reviewPlaceholder')) ?>"></textarea>
                     <button class="btn btn--primary mt" type="submit"><?= e($t('product.writeReview')) ?></button>
                 </form>
             <?php elseif ($reviewEligibility === \Bazaar\Services\ReviewService::alreadyReviewed): ?>
@@ -147,7 +147,7 @@ $reviewCount = (int) $reviewSummary['count'];
                         <article class="review">
                             <div class="review__head">
                                 <span class="rating__stars"><?= str_repeat('*', (int) $review['rating']) ?><span class="rating__off"><?= str_repeat('*', 5 - (int) $review['rating']) ?></span></span>
-                                <strong><?= e($review['title'] !== '' ? $review['title'] : 'Review') ?></strong>
+                                <strong><?= e($review['title'] !== '' ? $review['title'] : $t('product.reviewFallbackTitle')) ?></strong>
                             </div>
                             <p class="review__body"><?= nl2br(e($review['body'])) ?></p>
                             <p class="small muted"><?= e($review['authorName']) ?> &middot; <?= e(substr((string) $review['createdAt'], 0, 10)) ?></p>

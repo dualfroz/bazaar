@@ -19,14 +19,14 @@ final class ReviewController extends Controller
     public function approve(string $id): Response
     {
         $this->ctx->reviewService->approve((int) $id);
-        $this->ctx->session->flash('success', 'Review approved.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.reviewApproved'));
         return $this->redirect('/admin/reviews');
     }
 
     public function reject(string $id): Response
     {
         $this->ctx->reviewService->reject((int) $id);
-        $this->ctx->session->flash('success', 'Review rejected.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.reviewRejected'));
         return $this->redirect('/admin/reviews');
     }
 }

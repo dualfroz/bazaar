@@ -1,18 +1,18 @@
 <div class="admin__head">
     <div>
-        <h1 style="margin:0">Coupons</h1>
-        <p class="muted" style="margin:0">Percentage or fixed discounts with limits and windows.</p>
+        <h1 style="margin:0"><?= e($t('admin.nav.coupons')) ?></h1>
+        <p class="muted" style="margin:0"><?= e($t('admin.coupons.lead')) ?></p>
     </div>
-    <a class="btn btn--primary" href="/admin/coupons/create">New coupon</a>
+    <a class="btn btn--primary" href="/admin/coupons/create"><?= e($t('admin.coupons.new')) ?></a>
 </div>
 
 <?php if (empty($coupons)): ?>
-    <div class="empty"><p class="muted" style="margin:0">No coupons yet.</p></div>
+    <div class="empty"><p class="muted" style="margin:0"><?= e($t('admin.coupons.empty')) ?></p></div>
 <?php else: ?>
     <div class="table-wrap">
         <table class="table">
             <thead>
-                <tr><th>Code</th><th>Discount</th><th class="num">Min cart</th><th>Redemptions</th><th>Window</th><th>Status</th><th></th></tr>
+                <tr><th><?= e($t('admin.coupons.code')) ?></th><th><?= e($t('cart.discount')) ?></th><th class="num"><?= e($t('admin.coupons.minCart')) ?></th><th><?= e($t('admin.coupons.redemptions')) ?></th><th><?= e($t('admin.coupons.window')) ?></th><th><?= e($t('orders.status')) ?></th><th></th></tr>
             </thead>
             <tbody>
                 <?php foreach ($coupons as $coupon): ?>
@@ -34,11 +34,11 @@
                             &rarr;
                             <?= $coupon['expiresAt'] ? e(substr($coupon['expiresAt'], 0, 10)) : '-' ?>
                         </td>
-                        <td><span class="badge badge--<?= (int) $coupon['isActive'] === 1 ? 'stock' : 'out' ?>"><?= (int) $coupon['isActive'] === 1 ? 'active' : 'off' ?></span></td>
+                        <td><span class="badge badge--<?= (int) $coupon['isActive'] === 1 ? 'stock' : 'out' ?>"><?= e((int) $coupon['isActive'] === 1 ? $t('admin.common.active') : $t('admin.common.off')) ?></span></td>
                         <td>
-                            <form method="post" action="/admin/coupons/<?= (int) $coupon['id'] ?>/delete" onsubmit="return confirm('Delete this coupon?')">
+                            <form method="post" action="/admin/coupons/<?= (int) $coupon['id'] ?>/delete" onsubmit="return confirm(<?= e(json_encode($t('admin.coupons.confirmDelete'))) ?>)">
                                 <input type="hidden" name="csrfToken" value="<?= e($csrfToken) ?>">
-                                <button class="btn btn--danger btn--sm" type="submit">Delete</button>
+                                <button class="btn btn--danger btn--sm" type="submit"><?= e($t('admin.common.delete')) ?></button>
                             </form>
                         </td>
                     </tr>

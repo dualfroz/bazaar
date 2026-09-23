@@ -25,12 +25,12 @@ final class UserController extends Controller
         }
 
         if ($userId === (int) $this->ctx->auth->id()) {
-            $this->ctx->session->flash('error', 'You cannot change your own role.');
+            $this->ctx->session->flash('error', $this->t('admin.errors.ownRole'));
             return $this->redirect('/admin/users');
         }
 
         $this->ctx->users->setRole($userId, $role);
-        $this->ctx->session->flash('success', 'Role updated.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.roleUpdated'));
         return $this->redirect('/admin/users');
     }
 }

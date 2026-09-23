@@ -76,6 +76,14 @@ final class CouponRepository
         );
     }
 
+    public function releaseRedemption(int $id): void
+    {
+        $this->db->statement(
+            'UPDATE coupons SET redeemedCount = redeemedCount - 1 WHERE id = ? AND redeemedCount > 0',
+            [$id]
+        );
+    }
+
     public function delete(int $id): void
     {
         $this->db->statement('DELETE FROM coupons WHERE id = ?', [$id]);

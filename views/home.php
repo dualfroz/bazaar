@@ -1,13 +1,13 @@
 <section class="hero">
     <div class="wrap">
         <div class="hero__inner">
-            <span class="hero__eyebrow">Independent goods, fairly priced</span>
-            <h1>A small shop with a big appetite for good things.</h1>
-            <p>Bazaar is a demo storefront running on a hand-rolled PHP microframework - real catalog, session cart, Stripe checkout and an admin back office. Browse the shelves.</p>
+            <span class="hero__eyebrow"><?= e($t('home.eyebrow')) ?></span>
+            <h1><?= e($t('home.headline')) ?></h1>
+            <p><?= e($t('home.lead')) ?></p>
             <div class="hero__actions">
-                <a class="btn btn--primary" href="/products">Browse the catalog</a>
+                <a class="btn btn--primary" href="/products"><?= e($t('home.browse')) ?></a>
                 <?php if (!empty($categories)): ?>
-                    <a class="btn" href="/products?category=<?= e($categories[0]['slug']) ?>">Start with <?= e($categories[0]['name']) ?></a>
+                    <a class="btn" href="/products?category=<?= e($categories[0]['slug']) ?>"><?= e($t('home.startWith', ['category' => $categories[0]['name']])) ?></a>
                 <?php endif; ?>
             </div>
         </div>
@@ -18,15 +18,15 @@
     <div class="wrap">
         <div class="section-head">
             <div>
-                <h2>Fresh on the shelves</h2>
-                <p class="muted" style="margin:0">The latest additions to the catalog.</p>
+                <h2><?= e($t('home.freshTitle')) ?></h2>
+                <p class="muted" style="margin:0"><?= e($t('home.freshLead')) ?></p>
             </div>
-            <a class="btn btn--ghost" href="/products">View all &rarr;</a>
+            <a class="btn btn--ghost" href="/products"><?= e($t('home.viewAll')) ?> &rarr;</a>
         </div>
 
         <?php if (empty($featured)): ?>
             <div class="empty">
-                <p class="muted">No products yet. Seed the database or add one from the admin panel.</p>
+                <p class="muted"><?= e($t('home.empty')) ?></p>
             </div>
         <?php else: ?>
             <div class="product-grid">
@@ -42,7 +42,7 @@
 <section class="block block--tight" style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
     <div class="wrap">
         <div class="section-head">
-            <h2 style="margin:0">Shop by department</h2>
+            <h2 style="margin:0"><?= e($t('home.departments')) ?></h2>
         </div>
         <div class="chips">
             <?php foreach ($categories as $category): ?>

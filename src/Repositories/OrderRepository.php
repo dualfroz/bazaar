@@ -10,12 +10,18 @@ final class OrderRepository
     {
     }
 
-    public function create(int $userId, int $totalCents, string $currency, int $discountCents = 0, ?string $couponCode = null): int
-    {
+    public function create(
+        int $userId,
+        int $totalCents,
+        string $currency,
+        int $discountCents = 0,
+        ?string $couponCode = null,
+        string $locale = 'en'
+    ): int {
         return $this->db->insert(
-            'INSERT INTO orders (userId, status, totalCents, currency, discountCents, couponCode, createdAt)
-             VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [$userId, 'pending', $totalCents, $currency, $discountCents, $couponCode, gmdate('c')]
+            'INSERT INTO orders (userId, status, totalCents, currency, discountCents, couponCode, locale, createdAt)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [$userId, 'pending', $totalCents, $currency, $discountCents, $couponCode, $locale, gmdate('c')]
         );
     }
 
@@ -73,12 +79,7 @@ final class OrderRepository
         $sql = 'UPDATE orders SET status = ?';
         $bindings = [$status];
         if ($timestampColumn !== null) {
-            $column = match ($timestampColumn) {
-                'paidAt' => 'paidAt',
-                'fulfilledAt' => 'fulfilledAt',
-                'cancelledAt' => 'cancelledAt',
-            };
-            $sql .= ", {$column} = ?";
+            $sql .= ", {$this->timestampColumn($timestampColumn)} = ?";
             $bindings[] = gmdate('c');
         }
         if ($stripeSessionId !== null) {
@@ -88,6 +89,37 @@ final class OrderRepository
         $sql .= ' WHERE id = ?';
         $bindings[] = $id;
         $this->db->statement($sql, $bindings);
+    }
+
+    public function transition(int $id, string $fromStatus, string $toStatus, string $timestampColumn): bool
+    {
+        return $this->db->statement(
+            "UPDATE orders SET status = ?, {$this->timestampColumn($timestampColumn)} = ? WHERE id = ? AND status = ?",
+            [$toStatus, gmdate('c'), $id, $fromStatus]
+        ) === 1;
+    }
+
+    public function recordPaymentIntent(int $id, string $paymentIntentId): void
+    {
+        $this->db->statement('UPDATE orders SET paymentIntentId = ? WHERE id = ?', [$paymentIntentId, $id]);
+    }
+
+    public function recordRefund(int $id, string $stripeRefundId, int $refundedCents): void
+    {
+        $this->db->statement(
+            'UPDATE orders SET stripeRefundId = ?, refundedCents = ?, refundedAt = ? WHERE id = ?',
+            [$stripeRefundId, $refundedCents, gmdate('c'), $id]
+        );
+    }
+
+    private function timestampColumn(string $timestampColumn): string
+    {
+        return match ($timestampColumn) {
+            'paidAt' => 'paidAt',
+            'fulfilledAt' => 'fulfilledAt',
+            'cancelledAt' => 'cancelledAt',
+            'failedAt' => 'failedAt',
+        };
     }
 
     public function findByStripeSession(string $sessionId): ?array

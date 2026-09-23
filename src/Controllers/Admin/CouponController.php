@@ -27,14 +27,14 @@ final class CouponController extends Controller
         }
 
         $this->ctx->coupons->create($fields);
-        $this->ctx->session->flash('success', 'Coupon created.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.couponCreated'));
         return $this->redirect('/admin/coupons');
     }
 
     public function destroy(string $id): Response
     {
         $this->ctx->coupons->delete((int) $id);
-        $this->ctx->session->flash('success', 'Coupon deleted.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.couponDeleted'));
         return $this->redirect('/admin/coupons');
     }
 
@@ -49,15 +49,15 @@ final class CouponController extends Controller
 
         $errors = [];
         if ($code === '') {
-            $errors['code'] = 'Code is required.';
+            $errors['code'] = $this->t('admin.errors.codeRequired');
         } elseif ($this->ctx->coupons->findByCode($code) !== null) {
-            $errors['code'] = 'A coupon with this code already exists.';
+            $errors['code'] = $this->t('admin.errors.codeTaken');
         }
         if ($type === 'percent' && ($value < 1 || $value > 100)) {
-            $errors['value'] = 'Percent must be between 1 and 100.';
+            $errors['value'] = $this->t('admin.errors.percentRange');
         }
         if ($type === 'fixed' && $value < 1) {
-            $errors['value'] = 'Amount must be greater than zero.';
+            $errors['value'] = $this->t('admin.errors.amountPositive');
         }
 
         $fields = [

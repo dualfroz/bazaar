@@ -48,7 +48,7 @@ final class VariantController extends Controller
             }
         }
 
-        $this->ctx->session->flash('success', 'Variant added.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.variantAdded'));
         return $this->redirect('/admin/products/' . $productId . '/variants');
     }
 
@@ -59,7 +59,7 @@ final class VariantController extends Controller
             return $this->notFound();
         }
         $this->ctx->variants->delete((int) $id);
-        $this->ctx->session->flash('success', 'Variant removed.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.variantRemoved'));
         return $this->redirect('/admin/products/' . (int) $variant['productId'] . '/variants');
     }
 }

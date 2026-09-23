@@ -18,15 +18,15 @@ final class AttributeController extends Controller
     {
         $name = trim((string) $this->ctx->request->input('name', ''));
         if ($name === '') {
-            $this->ctx->session->flash('error', 'Attribute name is required.');
+            $this->ctx->session->flash('error', $this->t('admin.errors.attributeNameRequired'));
             return $this->redirect('/admin/attributes');
         }
         $slug = slugify($name);
         if ($this->ctx->attributes->findBySlug($slug) === null) {
             $this->ctx->attributes->create($name, $slug);
-            $this->ctx->session->flash('success', 'Attribute created.');
+            $this->ctx->session->flash('success', $this->t('admin.flash.attributeCreated'));
         } else {
-            $this->ctx->session->flash('error', 'That attribute already exists.');
+            $this->ctx->session->flash('error', $this->t('admin.errors.attributeExists'));
         }
         return $this->redirect('/admin/attributes');
     }
@@ -41,16 +41,16 @@ final class AttributeController extends Controller
 
         $value = trim((string) $this->ctx->request->input('value', ''));
         if ($value === '') {
-            $this->ctx->session->flash('error', 'Value is required.');
+            $this->ctx->session->flash('error', $this->t('admin.errors.valueRequired'));
             return $this->redirect('/admin/attributes');
         }
 
         $slug = slugify($value);
         if ($this->ctx->attributes->findValueBySlug($attributeId, $slug) === null) {
             $this->ctx->attributes->createValue($attributeId, $value, $slug);
-            $this->ctx->session->flash('success', 'Value added.');
+            $this->ctx->session->flash('success', $this->t('admin.flash.valueAdded'));
         } else {
-            $this->ctx->session->flash('error', 'That value already exists for this attribute.');
+            $this->ctx->session->flash('error', $this->t('admin.errors.valueExists'));
         }
         return $this->redirect('/admin/attributes');
     }

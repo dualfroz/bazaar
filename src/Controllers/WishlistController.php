@@ -22,7 +22,7 @@ final class WishlistController extends Controller
         }
 
         $saved = $this->ctx->wishlist->toggle((int) $this->ctx->auth->id(), $productId);
-        $this->ctx->session->flash('success', $saved ? 'Saved to your wishlist.' : 'Removed from your wishlist.');
+        $this->ctx->session->flash('success', $saved ? $this->t('wishlist.saved') : $this->t('wishlist.removed'));
         return $this->back('/products/' . $product['slug']);
     }
 }

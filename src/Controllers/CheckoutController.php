@@ -30,35 +30,59 @@ final class CheckoutController extends Controller
             return $this->redirect('/cart');
         }
 
-        if (!Config::stripeConfigured()) {
-            $this->ctx->session->flash('error', 'Stripe is not configured yet. Add test keys in .env to accept payments.');
+        $subtotalCents = $cart->totalCents();
+        $discount = $this->resolveDiscount($subtotalCents);
+        $isFree = $subtotalCents - $discount['discountCents'] === 0;
+
+        if (!$isFree && !Config::stripeConfigured()) {
+            $this->ctx->session->flash('error', $this->t('checkout.stripeMissing'));
             return $this->redirect('/checkout');
         }
 
-        $currency = (string) Config::get('CURRENCY', 'usd');
-        $discount = $this->resolveDiscount($cart->totalCents());
         try {
             $orderId = $this->ctx->orderService->createFromCart(
                 $this->ctx->auth->id(),
                 $cart,
-                $currency,
-                $discount['discountCents'] > 0 ? $discount : null
+                (string) Config::get('CURRENCY', 'usd'),
+                $discount['discountCents'] > 0 ? $discount : null,
+                $this->ctx->translator->locale()
             );
         } catch (InsufficientStockException $error) {
-            $this->ctx->session->flash('error', $error->getMessage());
+            $this->ctx->session->flash('error', $this->t('checkout.insufficientStock', ['product' => $error->productName]));
             return $this->redirect('/cart');
         }
 
+        return $isFree ? $this->completeFreeOrder($orderId) : $this->startStripeCheckout($orderId);
+    }
+
+    private function completeFreeOrder(int $orderId): Response
+    {
+        try {
+            $this->ctx->orderService->markPaid($orderId);
+        } catch (InsufficientStockException $error) {
+            $this->ctx->orderService->markFailed($orderId);
+            $this->ctx->session->flash('error', $this->t('checkout.insufficientStock', ['product' => $error->productName]));
+            return $this->redirect('/cart');
+        }
+
+        $this->ctx->cart->clear();
+        $this->ctx->session->flash('success', $this->t('checkout.freeOrderPlaced', ['id' => $orderId]));
+        return $this->redirect('/account/orders/' . $orderId);
+    }
+
+    private function startStripeCheckout(int $orderId): Response
+    {
         $appUrl = rtrim((string) Config::get('APP_URL'), '/');
         try {
-            $session = $this->gateway()->createCheckoutSession(
-                $orderId,
-                $cart->lines(),
+            $session = StripeGateway::fromConfig()->createCheckoutSession(
+                $this->ctx->orders->find($orderId),
+                $this->ctx->orders->items($orderId),
                 $appUrl . '/checkout/success?session_id={CHECKOUT_SESSION_ID}',
                 $appUrl . '/checkout/cancel'
             );
-        } catch (\Throwable $error) {
-            $this->ctx->session->flash('error', 'Could not reach the payment provider. Please try again.');
+        } catch (\Throwable) {
+            $this->ctx->orderService->markFailed($orderId);
+            $this->ctx->session->flash('error', $this->t('checkout.paymentStartFailed'));
             return $this->redirect('/checkout');
         }
 
@@ -74,7 +98,7 @@ final class CheckoutController extends Controller
         }
 
         try {
-            $details = $this->gateway()->retrieveSession($sessionId);
+            $details = StripeGateway::fromConfig()->retrieveSession($sessionId);
         } catch (\Throwable) {
             return $this->redirect('/account/orders');
         }
@@ -85,7 +109,7 @@ final class CheckoutController extends Controller
             : null;
 
         if ($order !== null && $details['paymentStatus'] === 'paid') {
-            $this->ctx->orderService->markPaid($orderId, $sessionId);
+            $this->ctx->orderService->markPaid($orderId, $sessionId, $details['paymentIntentId']);
             $this->ctx->cart->clear();
             $order = $this->ctx->orders->find($orderId);
         }
@@ -111,7 +135,7 @@ final class CheckoutController extends Controller
         $signature = (string) $this->ctx->request->header('Stripe-Signature');
 
         try {
-            $event = $this->gateway()->parseWebhook($payload, $signature);
+            $event = StripeGateway::fromConfig()->parseWebhook($payload, $signature);
         } catch (\Throwable) {
             return Response::json(['error' => 'invalid signature'], 400);
         }
@@ -122,7 +146,7 @@ final class CheckoutController extends Controller
                 ? (int) $session->metadata->orderId
                 : (int) $session->client_reference_id;
             if ($orderId > 0) {
-                $this->ctx->orderService->markPaid($orderId, $session->id);
+                $this->ctx->orderService->markPaid($orderId, $session->id, $session->payment_intent);
             }
         }
 
@@ -140,14 +164,5 @@ final class CheckoutController extends Controller
             $this->ctx->session->forget('couponCode');
         }
         return ['couponCode' => '', 'discountCents' => 0];
-    }
-
-    private function gateway(): StripeGateway
-    {
-        return new StripeGateway(
-            (string) Config::get('STRIPE_SECRET_KEY'),
-            (string) Config::get('STRIPE_WEBHOOK_SECRET'),
-            (string) Config::get('CURRENCY', 'usd')
-        );
     }
 }

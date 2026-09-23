@@ -104,6 +104,14 @@ final class VariantRepository
         );
     }
 
+    public function incrementStock(int $id, int $quantity): void
+    {
+        $this->db->statement(
+            'UPDATE productVariants SET stockQuantity = stockQuantity + ? WHERE id = ?',
+            [$quantity, $id]
+        );
+    }
+
     public function delete(int $id): void
     {
         $this->db->statement('DELETE FROM productVariants WHERE id = ?', [$id]);

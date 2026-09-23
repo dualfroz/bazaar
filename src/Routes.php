@@ -53,6 +53,7 @@ final class Routes
 
         $router->get('/account/orders', [AccountController::class, 'orders'], ['auth']);
         $router->get('/account/orders/{id}', [AccountController::class, 'show'], ['auth']);
+        $router->post('/account/orders/{id}/cancel', [AccountController::class, 'cancel'], ['auth']);
 
         $router->get('/checkout', [CheckoutController::class, 'index'], ['auth']);
         $router->post('/checkout', [CheckoutController::class, 'create'], ['auth']);
@@ -88,6 +89,7 @@ final class Routes
         $router->get('/admin/orders', [AdminOrderController::class, 'index'], ['staff']);
         $router->get('/admin/orders/{id}', [AdminOrderController::class, 'show'], ['staff']);
         $router->post('/admin/orders/{id}/fulfill', [AdminOrderController::class, 'fulfill'], ['staff']);
+        $router->post('/admin/orders/{id}/cancel', [AdminOrderController::class, 'cancel'], ['staff']);
 
         $router->get('/admin/reviews', [AdminReviewController::class, 'index'], ['staff']);
         $router->post('/admin/reviews/{id}/approve', [AdminReviewController::class, 'approve'], ['staff']);

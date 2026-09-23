@@ -33,7 +33,7 @@ final class CategoryController extends Controller
         }
 
         $this->ctx->categories->create($fields['name'], $fields['slug'], $fields['description']);
-        $this->ctx->session->flash('success', 'Category created.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.categoryCreated'));
         return $this->redirect('/admin/categories');
     }
 
@@ -66,14 +66,14 @@ final class CategoryController extends Controller
         }
 
         $this->ctx->categories->update((int) $id, $fields['name'], $fields['slug'], $fields['description']);
-        $this->ctx->session->flash('success', 'Category updated.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.categoryUpdated'));
         return $this->redirect('/admin/categories');
     }
 
     public function destroy(string $id): Response
     {
         $this->ctx->categories->delete((int) $id);
-        $this->ctx->session->flash('success', 'Category deleted.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.categoryDeleted'));
         return $this->redirect('/admin/categories');
     }
 
@@ -88,7 +88,7 @@ final class CategoryController extends Controller
 
         $errors = [];
         if ($name === '') {
-            $errors['name'] = 'Name is required.';
+            $errors['name'] = $this->t('admin.errors.nameRequired');
         }
 
         $fields = [

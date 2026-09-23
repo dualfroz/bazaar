@@ -35,7 +35,7 @@ final class ProductController extends Controller
         }
 
         $this->ctx->products->create($fields);
-        $this->ctx->session->flash('success', 'Product created.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.productCreated'));
         return $this->redirect('/admin/products');
     }
 
@@ -70,14 +70,14 @@ final class ProductController extends Controller
         }
 
         $this->ctx->products->update((int) $id, $fields);
-        $this->ctx->session->flash('success', 'Product updated.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.productUpdated'));
         return $this->redirect('/admin/products');
     }
 
     public function destroy(string $id): Response
     {
         $this->ctx->products->delete((int) $id);
-        $this->ctx->session->flash('success', 'Product deleted.');
+        $this->ctx->session->flash('success', $this->t('admin.flash.productDeleted'));
         return $this->redirect('/admin/products');
     }
 
@@ -95,16 +95,16 @@ final class ProductController extends Controller
 
         $errors = [];
         if ($name === '') {
-            $errors['name'] = 'Name is required.';
+            $errors['name'] = $this->t('admin.errors.nameRequired');
         }
         if ($this->ctx->categories->find($categoryId) === null) {
-            $errors['categoryId'] = 'Select a valid category.';
+            $errors['categoryId'] = $this->t('admin.errors.categoryInvalid');
         }
         if ($priceCents < 0) {
-            $errors['price'] = 'Price cannot be negative.';
+            $errors['price'] = $this->t('admin.errors.priceNegative');
         }
         if ($stockQuantity < 0) {
-            $errors['stockQuantity'] = 'Stock cannot be negative.';
+            $errors['stockQuantity'] = $this->t('admin.errors.stockNegative');
         }
 
         $fields = [

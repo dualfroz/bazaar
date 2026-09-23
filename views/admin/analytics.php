@@ -6,36 +6,36 @@ foreach ($salesByDay as $day) {
 ?>
 <div class="admin__head">
     <div>
-        <h1 style="margin:0">Analytics</h1>
-        <p class="muted" style="margin:0">Sales, best sellers and stock health.</p>
+        <h1 style="margin:0"><?= e($t('admin.nav.analytics')) ?></h1>
+        <p class="muted" style="margin:0"><?= e($t('admin.analytics.lead')) ?></p>
     </div>
 </div>
 
 <div class="stat-grid">
     <div class="stat">
-        <div class="stat__label">Revenue</div>
+        <div class="stat__label"><?= e($t('admin.dashboard.revenue')) ?></div>
         <div class="stat__value"><?= e(formatMoney((int) $revenueCents, $currency)) ?></div>
-        <div class="stat__hint">Paid and fulfilled</div>
+        <div class="stat__hint"><?= e($t('admin.analytics.revenueHint')) ?></div>
     </div>
     <div class="stat">
-        <div class="stat__label">Units sold</div>
+        <div class="stat__label"><?= e($t('admin.analytics.unitsSold')) ?></div>
         <div class="stat__value"><?= (int) $unitsSold ?></div>
-        <div class="stat__hint">Across all orders</div>
+        <div class="stat__hint"><?= e($t('admin.analytics.unitsHint')) ?></div>
     </div>
     <div class="stat">
-        <div class="stat__label">Avg order value</div>
+        <div class="stat__label"><?= e($t('admin.analytics.averageOrder')) ?></div>
         <div class="stat__value"><?= e(formatMoney((int) $averageOrderCents, $currency)) ?></div>
-        <div class="stat__hint">Per paid order</div>
+        <div class="stat__hint"><?= e($t('admin.analytics.averageHint')) ?></div>
     </div>
     <div class="stat">
-        <div class="stat__label">Low stock</div>
+        <div class="stat__label"><?= e($t('admin.dashboard.lowStock')) ?></div>
         <div class="stat__value"><?= count($lowStock) ?></div>
-        <div class="stat__hint">At or below 5 units</div>
+        <div class="stat__hint"><?= e($t('admin.analytics.lowStockHint')) ?></div>
     </div>
 </div>
 
 <div class="panel panel--pad mt-lg">
-    <h3 style="margin-top:0">Revenue, last 14 days</h3>
+    <h3 style="margin-top:0"><?= e($t('admin.analytics.revenueChart')) ?></h3>
     <div class="chart">
         <?php foreach ($salesByDay as $day): ?>
             <?php $height = $maxRevenue > 0 ? max(2, (int) round((int) $day['revenueCents'] / $maxRevenue * 100)) : 2; ?>
@@ -49,13 +49,13 @@ foreach ($salesByDay as $day) {
 
 <div class="split mt-lg" style="grid-template-columns:1fr 1fr">
     <div>
-        <div class="section-head"><h3 style="margin:0">Top products</h3></div>
+        <div class="section-head"><h3 style="margin:0"><?= e($t('admin.analytics.topProducts')) ?></h3></div>
         <?php if (empty($topProducts)): ?>
-            <div class="empty"><p class="muted" style="margin:0">No sales yet.</p></div>
+            <div class="empty"><p class="muted" style="margin:0"><?= e($t('admin.analytics.noSales')) ?></p></div>
         <?php else: ?>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Product</th><th class="num">Units</th><th class="num">Revenue</th></tr></thead>
+                    <thead><tr><th><?= e($t('admin.products.product')) ?></th><th class="num"><?= e($t('admin.analytics.units')) ?></th><th class="num"><?= e($t('admin.dashboard.revenue')) ?></th></tr></thead>
                     <tbody>
                         <?php foreach ($topProducts as $product): ?>
                             <tr>
@@ -71,13 +71,13 @@ foreach ($salesByDay as $day) {
     </div>
 
     <div>
-        <div class="section-head"><h3 style="margin:0">Coupon usage</h3></div>
+        <div class="section-head"><h3 style="margin:0"><?= e($t('admin.analytics.couponUsage')) ?></h3></div>
         <?php if (empty($couponUsage)): ?>
-            <div class="empty"><p class="muted" style="margin:0">No coupons redeemed yet.</p></div>
+            <div class="empty"><p class="muted" style="margin:0"><?= e($t('admin.analytics.noCoupons')) ?></p></div>
         <?php else: ?>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Code</th><th class="num">Orders</th><th class="num">Discount</th></tr></thead>
+                    <thead><tr><th><?= e($t('admin.coupons.code')) ?></th><th class="num"><?= e($t('admin.nav.orders')) ?></th><th class="num"><?= e($t('cart.discount')) ?></th></tr></thead>
                     <tbody>
                         <?php foreach ($couponUsage as $coupon): ?>
                             <tr>

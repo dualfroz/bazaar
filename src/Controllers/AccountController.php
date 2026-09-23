@@ -25,4 +25,19 @@ final class AccountController extends Controller
             'items' => $this->ctx->orders->items((int) $id),
         ]);
     }
+
+    public function cancel(string $id): Response
+    {
+        $userId = $this->ctx->auth->id();
+        $order = $this->ctx->orders->findForUser((int) $id, $userId);
+        if ($order === null) {
+            return $this->notFound();
+        }
+
+        return $this->cancelOrder(
+            $order,
+            fn () => $this->ctx->orderService->cancelForCustomer((int) $id, $userId),
+            '/account/orders/' . (int) $id
+        );
+    }
 }
