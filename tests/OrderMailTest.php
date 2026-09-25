@@ -2,6 +2,7 @@
 
 namespace Bazaar\Tests;
 
+use Bazaar\Core\Config;
 use Bazaar\Core\Session;
 use Bazaar\Mail\LogMailer;
 use Bazaar\Repositories\OrderRepository;
@@ -40,6 +41,7 @@ final class OrderMailTest extends DatabaseTestCase
 
     protected function tearDown(): void
     {
+        Config::set('MAIL_FROM', 'orders@bazaar.test');
         if (is_file($this->logPath)) {
             unlink($this->logPath);
         }
@@ -80,6 +82,23 @@ final class OrderMailTest extends DatabaseTestCase
         $sent = $this->mailer->sent();
         $this->assertCount(2, $sent);
         $this->assertStringContainsString('fulfilled', $sent[1]->subject);
+    }
+
+    public function testConfirmationUsesConfiguredSender(): void
+    {
+        Config::set('MAIL_FROM', 'shop@example.com');
+        $this->service = new OrderService(
+            $this->db,
+            $this->orders,
+            $this->products,
+            new VariantRepository($this->db),
+            null,
+            $this->mailer
+        );
+
+        $this->service->markPaid($this->order());
+
+        $this->assertSame('shop@example.com', $this->mailer->sent()[0]->from);
     }
 
     public function testLogMailerWritesToDisk(): void
